@@ -1,7 +1,10 @@
+# Este programa em python espera que teclas
+# sejam digitadas e encaminha o respectivo
+# codigo ascii para o arduino.
+
 import serial
 import keyboard
 import time
-#import recipe_getch
 
 print("Zebot Control Keyboard");
 print("Use 'w' 's' 'a' 'd' to control");
