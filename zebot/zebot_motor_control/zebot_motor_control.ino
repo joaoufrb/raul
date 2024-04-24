@@ -12,7 +12,8 @@
 #define DIR_LEFT  false
 #define MAX_SPEED 128
 #define MIN_SPEED 16
-#define SLOW_SPEED 30
+#define SLOW_SPEED 50
+#define SERIAL_LOOP_DELAY 35 // delay between each cycle [1.Read Serial 2.Drive motors]
 
 #define CMD_GO_FWD     119   // w
 #define CMD_GO_RWD     115   // s
@@ -81,7 +82,7 @@ void loop()
     } else {
       release();
     }
-    delay(50);
+    delay(SERIAL_LOOP_DELAY);
   } else {
      release();
   }
