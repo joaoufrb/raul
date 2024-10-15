@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Point Cloud Viewer with Navigation</title>
+    <title>3D Point Cloud Viewer</title>
     <style>
         body { margin: 0; }
         canvas { display: block; }
@@ -13,7 +13,7 @@
     <!-- Include three.js library and PLYLoader -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/PLYLoader.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/FirstPersonControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 
     <script>
         // Basic setup for scene, camera, and renderer
@@ -23,13 +23,10 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
 
-        // FirstPersonControls for navigation-like experience
-        const controls = new THREE.FirstPersonControls(camera, renderer.domElement);
-        controls.lookSpeed = 0.1;  // Mouse look sensitivity
-        controls.movementSpeed = 1;  // Speed for moving with keys (WASD)
-        controls.lookVertical = true;  // Allow looking up/down
-
-        camera.position.set(0, 1.6, 5);  // Set initial camera height to mimic eye level
+        // OrbitControls allows mouse interaction with the scene
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        camera.position.set(0, 0, 5);
+        controls.update();
 
         // Add a directional light
         const light = new THREE.DirectionalLight(0xffffff, 1);
@@ -55,7 +52,7 @@
         // Animation loop to render the scene
         function animate() {
             requestAnimationFrame(animate);
-            controls.update(0.1);  // Pass delta time for smoother movement
+            controls.update(); // Enable mouse interaction
             renderer.render(scene, camera);
         }
 
