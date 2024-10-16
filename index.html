@@ -55,7 +55,7 @@
 
         // Load the PLY point cloud
         const loader = new THREE.PLYLoader();
-        loader.load('your-point-cloud.ply', function (geometry) {
+        loader.load('3d_maps/limm1_cloud.ply', function (geometry) {
           geometry.computeVertexNormals();
           const material = new THREE.PointsMaterial({
             size: 0.01,
