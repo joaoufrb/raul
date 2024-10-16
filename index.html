@@ -20,7 +20,7 @@
     </style>
 </head>
 <body>
-    <div id="instructions">Tap the screen to start navigation</div>
+    <div id="instructions">Clique aqui para navegar, pressione ESC para sair</div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/PLYLoader.js"></script>
@@ -170,8 +170,8 @@
             direction.x = Number(moveRight) - Number(moveLeft);
             direction.normalize();
 
-            if (moveForward || moveBackward) velocity.y -= direction.y * 400.0 * delta;
-            if (moveLeft || moveRight) velocity.x -= direction.x * 400.0 * delta;
+            if (moveForward || moveBackward) velocity.y -= direction.y * 50.0 * delta;
+            if (moveLeft || moveRight) velocity.x -= direction.x * 50.0 * delta;
 
             controls.moveRight(-velocity.x * delta);
             controls.moveForward(-velocity.y * delta);
