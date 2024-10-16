@@ -3,17 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Point Cloud Viewer</title>
+    <title>3D Point Cloud Viewer with Fixed Camera Height</title>
     <style>
         body { margin: 0; }
         canvas { display: block; }
+        #instructions {
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            text-align: center;
+            font-size: 24px;
+            color: white;
+            z-index: 1;
+            font-family: Arial, sans-serif;
+        }
     </style>
 </head>
 <body>
-    <!-- Include three.js library and PLYLoader -->
+    <div id="instructions">Click to enter navigation mode</div>
+
+    <!-- Include three.js and PLYLoader -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/PLYLoader.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/PointerLockControls.js"></script>
 
     <script>
         // Basic setup for scene, camera, and renderer
@@ -23,24 +35,85 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
 
-        // OrbitControls allows mouse interaction with the scene
-        const controls = new THREE.OrbitControls(camera, renderer.domElement);
-        camera.position.set(0, 0, 5);
-        controls.update();
+        // PointerLockControls setup
+        const controls = new THREE.PointerLockControls(camera, document.body);
+        const instructions = document.getElementById('instructions');
+
+        instructions.addEventListener('click', () => {
+            controls.lock();  // Lock the mouse pointer to the window
+        });
+
+        controls.addEventListener('lock', () => {
+            instructions.style.display = 'none';  // Hide instructions when locked
+        });
+
+        controls.addEventListener('unlock', () => {
+            instructions.style.display = '';  // Show instructions again when unlocked
+        });
+
+        // Fix the camera height (y) at 1.6 meters
+        const fixedHeight = 1.6;
+        camera.position.set(0, fixedHeight, 5);  // Initial camera position
+
+        // Movement variables
+        let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
+        const velocity = new THREE.Vector3();
+        const direction = new THREE.Vector3();
+
+        document.addEventListener('keydown', (event) => {
+            switch (event.code) {
+                case 'ArrowUp':
+                case 'KeyW':
+                    moveForward = true;
+                    break;
+                case 'ArrowLeft':
+                case 'KeyA':
+                    moveLeft = true;
+                    break;
+                case 'ArrowDown':
+                case 'KeyS':
+                    moveBackward = true;
+                    break;
+                case 'ArrowRight':
+                case 'KeyD':
+                    moveRight = true;
+                    break;
+            }
+        });
+
+        document.addEventListener('keyup', (event) => {
+            switch (event.code) {
+                case 'ArrowUp':
+                case 'KeyW':
+                    moveForward = false;
+                    break;
+                case 'ArrowLeft':
+                case 'KeyA':
+                    moveLeft = false;
+                    break;
+                case 'ArrowDown':
+                case 'KeyS':
+                    moveBackward = false;
+                    break;
+                case 'ArrowRight':
+                case 'KeyD':
+                    moveRight = false;
+                    break;
+            }
+        });
+
+        // Load PLY file using PLYLoader
+        const loader = new THREE.PLYLoader();
+        loader.load('3d_maps/limm1_cloud.ply', function (geometry) {
+            const material = new THREE.PointsMaterial({ size: 0.01, vertexColors: true });
+            const pointCloud = new THREE.Points(geometry, material);
+            scene.add(pointCloud);
+        });
 
         // Add a directional light
         const light = new THREE.DirectionalLight(0xffffff, 1);
         light.position.set(1, 1, 1).normalize();
         scene.add(light);
-
-        // Load PLY file using PLYLoader
-        const loader = new THREE.PLYLoader();
-        loader.load('3d_maps/limm1_cloud.ply', function (geometry) {
-            // Use PointsMaterial for point cloud appearance
-            const material = new THREE.PointsMaterial({ size: 0.01, vertexColors: true });
-            const pointCloud = new THREE.Points(geometry, material);
-            scene.add(pointCloud);
-        });
 
         // Adjust on window resize
         window.addEventListener('resize', function() {
@@ -49,10 +122,29 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
 
-        // Animation loop to render the scene
+        // Animation loop with fixed camera height
+        const clock = new THREE.Clock();
         function animate() {
             requestAnimationFrame(animate);
-            controls.update(); // Enable mouse interaction
+
+            // Movement logic
+            const delta = clock.getDelta();
+            velocity.x -= velocity.x * 10.0 * delta;
+            velocity.z -= velocity.z * 10.0 * delta;
+
+            direction.z = Number(moveForward) - Number(moveBackward);
+            direction.x = Number(moveRight) - Number(moveLeft);
+            direction.normalize();
+
+            if (moveForward || moveBackward) velocity.z -= direction.z * 400.0 * delta;
+            if (moveLeft || moveRight) velocity.x -= direction.x * 400.0 * delta;
+
+            controls.moveRight(-velocity.x * delta);
+            controls.moveForward(-velocity.z * delta);
+
+            // Maintain the camera height
+            camera.position.y = fixedHeight;
+
             renderer.render(scene, camera);
         }
 

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Point Cloud Viewer</title>
+    <style>
+        body { margin: 0; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <!-- Include three.js library and PLYLoader -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/PLYLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+    <script>
+        // Basic setup for scene, camera, and renderer
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // OrbitControls allows mouse interaction with the scene
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        camera.position.set(0, 0, 5);
+        controls.update();
+
+        // Add a directional light
+        const light = new THREE.DirectionalLight(0xffffff, 1);
+        light.position.set(1, 1, 1).normalize();
+        scene.add(light);
+
+        // Load PLY file using PLYLoader
+        const loader = new THREE.PLYLoader();
+        loader.load('3d_maps/limm1_cloud.ply', function (geometry) {
+            // Use PointsMaterial for point cloud appearance
+            const material = new THREE.PointsMaterial({ size: 0.01, vertexColors: true });
+            const pointCloud = new THREE.Points(geometry, material);
+            scene.add(pointCloud);
+        });
+
+        // Adjust on window resize
+        window.addEventListener('resize', function() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Animation loop to render the scene
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update(); // Enable mouse interaction
+            renderer.render(scene, camera);
+        }
+
+        animate();
+    </script>
+</body>
+</html>
+
