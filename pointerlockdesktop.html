@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Point Cloud Viewer with Mobile Support</title>
+    <title>3D Point Cloud Viewer with Fixed Camera Height</title>
     <style>
-        body { margin: 0; overflow: hidden; }
+        body { margin: 0; }
         canvas { display: block; }
         #instructions {
             position: absolute;
@@ -20,51 +20,46 @@
     </style>
 </head>
 <body>
-    <div id="instructions">Tap the screen to start navigation</div>
+    <div id="instructions">Click to enter navigation mode</div>
 
+    <!-- Include three.js and PLYLoader -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/PLYLoader.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/PointerLockControls.js"></script>
 
     <script>
+        // Basic setup for scene, camera, and renderer
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer();
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
 
+        // PointerLockControls setup
         const controls = new THREE.PointerLockControls(camera, document.body);
         const instructions = document.getElementById('instructions');
 
-        let isMobile = /Mobi|Android/i.test(navigator.userAgent); // Detect mobile devices
-
-        // Event to lock pointer (for desktop)
         instructions.addEventListener('click', () => {
-            if (!isMobile) {
-                controls.lock();
-            }
+            controls.lock();  // Lock the mouse pointer to the window
         });
 
         controls.addEventListener('lock', () => {
-            instructions.style.display = 'none';
+            instructions.style.display = 'none';  // Hide instructions when locked
         });
 
         controls.addEventListener('unlock', () => {
-            instructions.style.display = '';
+            instructions.style.display = '';  // Show instructions again when unlocked
         });
 
-        // Fix camera height at 1.6 meters
+        // Fix the camera height (y) at 1.6 meters
         const fixedHeight = 1.6;
-        camera.position.set(0, fixedHeight, 5);
+        camera.position.set(0, fixedHeight, 5);  // Initial camera position
 
-        // Movement variables for both desktop and mobile
+        // Movement variables
         let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
         const velocity = new THREE.Vector3();
         const direction = new THREE.Vector3();
-        let touchStartX = 0, touchStartY = 0;
-        let touchMoveX = 0, touchMoveY = 0;
 
-        // Desktop key controls
         document.addEventListener('keydown', (event) => {
             switch (event.code) {
                 case 'ArrowUp':
@@ -107,58 +102,32 @@
             }
         });
 
-        // Mobile touch controls
-        document.addEventListener('touchstart', (event) => {
-            if (isMobile) {
-                const touch = event.touches[0];
-                touchStartX = touch.clientX;
-                touchStartY = touch.clientY;
-            }
-        });
-
-        document.addEventListener('touchmove', (event) => {
-            if (isMobile && event.touches.length == 1) {
-                const touch = event.touches[0];
-                touchMoveX = touch.clientX - touchStartX;
-                touchMoveY = touch.clientY - touchStartY;
-
-                // Move camera based on touch movements
-                camera.rotation.y -= touchMoveX * 0.002; // Horizontal rotation
-                camera.rotation.x -= touchMoveY * 0.002; // Vertical rotation (optional, limit if needed)
-            }
-        });
-
-        document.addEventListener('touchend', () => {
-            touchMoveX = 0;
-            touchMoveY = 0;
-        });
-
-        // Load PLY file
+        // Load PLY file using PLYLoader
         const loader = new THREE.PLYLoader();
-        loader.load('path_to_your_ply_file.ply', (geometry) => {
+        loader.load('3d_maps/limm1_cloud.ply', function (geometry) {
             const material = new THREE.PointsMaterial({ size: 0.01, vertexColors: true });
             const pointCloud = new THREE.Points(geometry, material);
             scene.add(pointCloud);
         });
 
-        // Light
+        // Add a directional light
         const light = new THREE.DirectionalLight(0xffffff, 1);
         light.position.set(1, 1, 1).normalize();
         scene.add(light);
 
-        // Resize handling
-        window.addEventListener('resize', () => {
+        // Adjust on window resize
+        window.addEventListener('resize', function() {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
 
-        // Animation loop
+        // Animation loop with fixed camera height
         const clock = new THREE.Clock();
         function animate() {
             requestAnimationFrame(animate);
 
-            // Movement logic for desktop
+            // Movement logic
             const delta = clock.getDelta();
             velocity.x -= velocity.x * 10.0 * delta;
             velocity.z -= velocity.z * 10.0 * delta;
@@ -173,7 +142,7 @@
             controls.moveRight(-velocity.x * delta);
             controls.moveForward(-velocity.z * delta);
 
-            // Fix camera height for walking
+            // Maintain the camera height
             camera.position.y = fixedHeight;
 
             renderer.render(scene, camera);
