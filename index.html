@@ -55,7 +55,8 @@
 
         // Fix camera height at 1.6 meters
         const fixedHeight = 1.6;
-        camera.position.set(0, fixedHeight, 5);
+        //camera.position.set(0, fixedHeight, 5);
+        camera.position.set(0, 5, fixedHeight);
 
         // Movement variables for both desktop and mobile
         let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
@@ -123,7 +124,8 @@
                 touchMoveY = touch.clientY - touchStartY;
 
                 // Move camera based on touch movements
-                camera.rotation.y -= touchMoveX * 0.002; // Horizontal rotation
+                //camera.rotation.y -= touchMoveX * 0.002; // Horizontal rotation
+                camera.rotation.z -= touchMoveX * 0.002; // Horizontal rotation
                 camera.rotation.x -= touchMoveY * 0.002; // Vertical rotation (optional, limit if needed)
             }
         });
@@ -161,20 +163,21 @@
             // Movement logic for desktop
             const delta = clock.getDelta();
             velocity.x -= velocity.x * 10.0 * delta;
-            velocity.z -= velocity.z * 10.0 * delta;
+            //velocity.z -= velocity.z * 10.0 * delta;
+            velocity.y -= velocity.y * 10.0 * delta;
 
-            direction.z = Number(moveForward) - Number(moveBackward);
+            direction.y = Number(moveForward) - Number(moveBackward);
             direction.x = Number(moveRight) - Number(moveLeft);
             direction.normalize();
 
-            if (moveForward || moveBackward) velocity.z -= direction.z * 400.0 * delta;
+            if (moveForward || moveBackward) velocity.y -= direction.y * 400.0 * delta;
             if (moveLeft || moveRight) velocity.x -= direction.x * 400.0 * delta;
 
             controls.moveRight(-velocity.x * delta);
-            controls.moveForward(-velocity.z * delta);
+            controls.moveForward(-velocity.y * delta);
 
             // Fix camera height for walking
-            camera.position.y = fixedHeight;
+            camera.position.z = fixedHeight;
 
             renderer.render(scene, camera);
         }
