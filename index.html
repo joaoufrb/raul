@@ -135,7 +135,7 @@
 
         // Load PLY file
         const loader = new THREE.PLYLoader();
-        loader.load('path_to_your_ply_file.ply', (geometry) => {
+        loader.load('3d_maps/limm1_cloud.ply', (geometry) => {
             const material = new THREE.PointsMaterial({ size: 0.01, vertexColors: true });
             const pointCloud = new THREE.Points(geometry, material);
             scene.add(pointCloud);
