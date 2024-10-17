@@ -20,7 +20,7 @@
     </style>
   </head>
 <body>
-    <div id="instructions">Click to enter navigation mode</div>
+    <div id="instructions">Clique para navegar, pressione ESC para sair</div>
 
     <!-- Include three.js and PLYLoader -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -51,8 +51,8 @@
             instructions.style.display = '';  // Show instructions again when unlocked
         });
 
-        // Fix the camera height (y) at 1.6 meters
-        const fixedHeight = 1.6;
+        // Fix the camera height (y) at 0.0 meters
+        const fixedHeight = 0.0;
         camera.position.set(0, fixedHeight, 5);  // Initial camera position
 
         // Movement variables
