@@ -105,8 +105,12 @@
         // Load PLY file using PLYLoader
         const loader = new THREE.PLYLoader();
         loader.load('3d_maps/limm1_cloud.ply', function (geometry) {
+            geometry.computeVertexNormals();
             const material = new THREE.PointsMaterial({ size: 0.01, vertexColors: true });
             const pointCloud = new THREE.Points(geometry, material);
+	    // Apply a 90-degree rotation around the X-axis to swap Z and Y
+	    pointCloud.rotation.x = -Math.PI / 2;
+
             scene.add(pointCloud);
         });
 
@@ -136,8 +140,8 @@
             direction.x = Number(moveRight) - Number(moveLeft);
             direction.normalize();
 
-            if (moveForward || moveBackward) velocity.z -= direction.z * 400.0 * delta;
-            if (moveLeft || moveRight) velocity.x -= direction.x * 400.0 * delta;
+            if (moveForward || moveBackward) velocity.z -= direction.z * 50.0 * delta;
+            if (moveLeft || moveRight) velocity.x -= direction.x * 50.0 * delta;
 
             controls.moveRight(-velocity.x * delta);
             controls.moveForward(-velocity.z * delta);
