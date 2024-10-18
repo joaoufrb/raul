@@ -106,7 +106,7 @@
         const loader = new THREE.PLYLoader();
         loader.load('3d_maps/limm1_cloud.ply', function (geometry) {
             geometry.computeVertexNormals();
-            const material = new THREE.PointsMaterial({ size: 0.05, vertexColors: true });
+            const material = new THREE.PointsMaterial({ size: 0.03, vertexColors: true });
             const pointCloud = new THREE.Points(geometry, material);
 	    // Apply a 90-degree rotation around the X-axis to swap Z and Y
 	    pointCloud.rotation.x = -Math.PI / 2;
