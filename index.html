@@ -104,7 +104,7 @@
 
         // Load PLY file using PLYLoader
         const loader = new THREE.PLYLoader();
-        loader.load('3d_maps/limm1_cloud.ply', function (geometry) {
+        loader.load('3d_maps/limm2.ply', function (geometry) {
             geometry.computeVertexNormals();
             const material = new THREE.PointsMaterial({ size: 0.03, vertexColors: true });
             const pointCloud = new THREE.Points(geometry, material);
