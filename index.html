@@ -110,6 +110,7 @@
             const pointCloud = new THREE.Points(geometry, material);
 	    // Apply a 90-degree rotation around the X-axis to swap Z and Y
 	    pointCloud.rotation.x = -Math.PI / 2;
+	    pointCloud.rotation.y = -3*(Math.PI/180);
 
             scene.add(pointCloud);
         });
