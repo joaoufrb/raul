@@ -1,6 +1,7 @@
 <launch>
   <!-- rosrun tf static_transform_publisher x y z qx qy qz qw parent_frame child_frame period_in_ms  -->
-  <node pkg="tf" type="static_transform_publisher" name="laser_tf_static" args="0.08 0.0 0.09 3.1415 0 0 /front_mount /laser 100" />
+ <!-- <node pkg="tf" type="static_transform_publisher" name="laser_tf_static" args="0.08 0.0 0.09 3.1415 0 0 /front_mount /laser 100" /> -->
+  <node pkg="tf" type="static_transform_publisher" name="laser_tf_static" args="0.08 -0.135 0.115 3.1415 0 3.1415 /front_mount /laser 100" />
 
   <node name="rplidarNode"          pkg="rplidar_ros"  type="rplidarNode" output="screen">
   <param name="serial_port"         type="string" value="/dev/ttyUSB0"/>  
